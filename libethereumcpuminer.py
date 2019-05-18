@@ -2,15 +2,20 @@ import binascii
 from web3 import Web3, HTTPProvider
 from ethereum.pow.ethpow import get_cache, hashimoto_light, TT64M1
 from ethereum import utils
+import sha3
 
 
 def hex_to_bin(data_hex):
     return binascii.unhexlify(data_hex[2:])
 
-
 def bin_to_hex(data_bin):
     return '0x' + binascii.hexlify(data_bin)
 
+def bin_to_hex_b(data_bin):
+    return b'0x' + binascii.hexlify(data_bin)
+
+def bin_to_hex_b_final(data_bin):
+    return (b'0x' + binascii.hexlify(data_bin)).decode("utf-8") 
 
 class EthereumCpuMiner(object):
     def __init__(self, ethereum_url):
@@ -32,25 +37,30 @@ class EthereumCpuMiner(object):
         cache = get_cache(self._block_number_int)
         nonce = start_nonce
         i = 0
+        difficulty = int(bin_to_hex_b(self._target_bin)[2:],16)
+        print(difficulty)
         while True:
             i += 1
             bin_nonce = utils.zpad(utils.int_to_big_endian((nonce + i) & TT64M1), 8)
-            o = hashimoto_light(self._block_number_int, cache, self._mining_hash_bin, bin_nonce)
-            if o[b'result'] <= self._target_bin:
-                assert len(bin_nonce) == 8
-                assert len(o[b'mix digest']) == 32
-
+            hash1 = int(sha3.keccak_256(self._mining_hash_bin+bin_nonce ).hexdigest(), 16)
+            #o = hashimoto_light(self._block_number_int, cache, self._mining_hash_bin, bin_nonce)
+            if hash1 <= difficulty:
                 self._nonce_bin = bin_nonce
-                self._mix_digest_bin = o[b'mix digest']
                 return
 
     def submit_work(self):
-        nonce_hex, mix_digest_hex = bin_to_hex(self._nonce_bin), bin_to_hex(self._mix_digest_bin)
+        print("self nonce is", self._nonce_bin)
+        nonce_hex, mix_digest_hex = bin_to_hex_b_final(self._nonce_bin), "0x"+"0"*64
+        print([nonce_hex, self._mining_hash_hex, mix_digest_hex])
         self._conn.manager.request_blocking("eth_submitWork", [nonce_hex, self._mining_hash_hex, mix_digest_hex])
 
     def mine_n_blocks(self, n=1):
         for _ in range(n):
+            print("hi")
             self.get_work()
+            print("get work")
             self.mine()
+            print('done mine')
             self.submit_work()
+            print('done submit mine')
 
