@@ -39,13 +39,19 @@ class EthereumCpuMiner(object):
         i = 0
         difficulty = int(bin_to_hex_b(self._target_bin)[2:],16)
         print(difficulty)
+        cnt = 0
         while True:
             i += 1
+            cnt+=1
             bin_nonce = utils.zpad(utils.int_to_big_endian((nonce + i) & TT64M1), 8)
-            hash1 = int(sha3.keccak_256(self._mining_hash_bin+bin_nonce ).hexdigest(), 16)
+            k = sha3.keccak_256()
+            k.update(self._mining_hash_bin)
+            k.update(bin_nonce)
+            hash1 = int(k.hexdigest(), 16)
             #o = hashimoto_light(self._block_number_int, cache, self._mining_hash_bin, bin_nonce)
             if hash1 <= difficulty:
                 self._nonce_bin = bin_nonce
+                print(cnt)
                 return
 
     def submit_work(self):
