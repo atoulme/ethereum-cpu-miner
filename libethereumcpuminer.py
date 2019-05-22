@@ -3,7 +3,7 @@ from web3 import Web3, HTTPProvider
 from ethereum.pow.ethpow import get_cache, hashimoto_light, TT64M1
 from ethereum import utils
 import sha3
-
+import time
 
 def hex_to_bin(data_hex):
     return binascii.unhexlify(data_hex[2:])
@@ -52,10 +52,10 @@ class EthereumCpuMiner(object):
             if hash1 <= difficulty:
                 self._nonce_bin = bin_nonce
                 print('cnt',cnt)
-                for x in self._mining_hash_bin:
-                  print(x)
-                for x in bin_nonce:
-                  print(x)
+                # for x in self._mining_hash_bin:
+                #   print(x)
+                # for x in bin_nonce:
+                #   print(x)
                 print('mh', self._mining_hash_bin, len( self._mining_hash_bin))
                 print('nonce', bin_nonce, len( bin_nonce))
                 return
@@ -69,11 +69,11 @@ class EthereumCpuMiner(object):
 
     def mine_n_blocks(self, n=1):
         for _ in range(n):
-            print("hi")
             self.get_work()
-            print("get work")
+            print("got work")
             self.mine()
             print('done mine')
             self.submit_work()
-            print('done submit mine')
+            print('submit answer')
+            # time.sleep(1)
 
