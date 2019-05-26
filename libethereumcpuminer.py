@@ -75,5 +75,5 @@ class EthereumCpuMiner(object):
             print('done mine')
             self.submit_work()
             print('submit answer')
-            # time.sleep(1)
+            # time.sleep(10)
 
