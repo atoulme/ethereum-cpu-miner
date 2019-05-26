@@ -19,7 +19,7 @@ def bin_to_hex_b_final(data_bin):
 
 class EthereumCpuMiner(object):
     def __init__(self, ethereum_url):
-        self._conn = Web3(HTTPProvider(ethereum_url, request_kwargs={'timeout':60}))
+        self._conn = Web3(HTTPProvider(ethereum_url, request_kwargs={'timeout':600}))
 
         self._mining_hash_hex = None
         self._mining_hash_bin = None
