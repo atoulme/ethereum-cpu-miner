@@ -71,7 +71,7 @@ class EthereumCpuMiner(object):
         print([nonce_hex, self._mining_hash_hex, mix_digest_hex])
 
         nonce_hasher = sha3.keccak_256()
-        nonce_hasher.update(self._nonce_bin.decode('utf-8'))
+        nonce_hasher.update(str(self._nonce_bin,'utf-8'))
         print('NONCE HASH: ' + nonce_hasher.hexdigest())
 
         mix_hasher = sha3.keccak_256()
