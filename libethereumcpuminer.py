@@ -65,25 +65,30 @@ class EthereumCpuMiner(object):
                 return
 
     def submit_work(self):
-        print("self nonce is", self._nonce_bin)
+        print("self nonce is: ", self._nonce_bin)
         nonce_hex, mix_digest_hex = bin_to_hex_b_final(self._nonce_bin), "0x"+"0"*64
         mix_digest_hex = self._mining_hash_hex
-        print([nonce_hex, self._mining_hash_hex, mix_digest_hex])
+
+        work_list = [nonce_hex, self._mining_hash_hex, mix_digest_hex]
+        print('work list is: ', work_list)
 
         nonce_hasher = sha3.keccak_256()
-        nonce_utf8 = self._nonce_bin.decode('utf-8'))
-        nonce_hasher.update(nonce_utf8)
+       	nonce_utf8 = str(self._nonce_bin)
+        nonce_hasher.update(nonce_utf8.encode('utf-8'))
+        # nonce_hasher.update(self._nonce_bin.encode('utf-8'))
         print('NONCE HASH: ' + nonce_hasher.hexdigest())
 
-        # mix_hasher = sha3.keccak_256()
-        # mix_hasher.update(("0x"+"0"*64).encode('utf-8'))
-        # print('MIX HASH: ' + mix_hasher.hexdigest())
+        mix_hasher = sha3.keccak_256()
+        mix_hasher.update(("0x"+"0"*64).encode('utf-8'))
+        print('MIX HASH: ' + mix_hasher.hexdigest())
 
-        # work_hasher = sha3.keccak_256()
-        # work_hasher.update([nonce_hex, self._mining_hash_hex, mix_digest_hex].encode('utf-8'))
-        # print('WORK HASH: ' + work_hasher.hexdigest())
+        work_hasher = sha3.keccak_256()
+        work_concat = ''.join(work_list)
+        print(work_concat)
+        work_hasher.update(work_concat.encode('utf-8'))
+        print('WORK HASH: ' + work_hasher.hexdigest())
 
-        self._conn.manager.request_blocking("eth_submitWork", [nonce_hex, self._mining_hash_hex, mix_digest_hex])
+        self._conn.manager.request_blocking("eth_submitWork", work_list)
 
     def mine_n_blocks(self, n=1):
         for _ in range(n):
