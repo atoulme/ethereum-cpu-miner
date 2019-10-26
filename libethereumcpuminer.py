@@ -71,16 +71,17 @@ class EthereumCpuMiner(object):
         print([nonce_hex, self._mining_hash_hex, mix_digest_hex])
 
         nonce_hasher = sha3.keccak_256()
-        nonce_hasher.update(str(self._nonce_bin,'utf-8'))
+        nonce_utf8 = self._nonce_bin.decode('utf-8'))
+        nonce_hasher.update(nonce_utf8)
         print('NONCE HASH: ' + nonce_hasher.hexdigest())
 
-        mix_hasher = sha3.keccak_256()
-        mix_hasher.update(("0x"+"0"*64).encode('utf-8'))
-        print('MIX HASH: ' + mix_hasher.hexdigest())
+        # mix_hasher = sha3.keccak_256()
+        # mix_hasher.update(("0x"+"0"*64).encode('utf-8'))
+        # print('MIX HASH: ' + mix_hasher.hexdigest())
 
-        work_hasher = sha3.keccak_256()
-        work_hasher.update([nonce_hex, self._mining_hash_hex, mix_digest_hex].encode('utf-8'))
-        print('WORK HASH: ' + work_hasher.hexdigest())
+        # work_hasher = sha3.keccak_256()
+        # work_hasher.update([nonce_hex, self._mining_hash_hex, mix_digest_hex].encode('utf-8'))
+        # print('WORK HASH: ' + work_hasher.hexdigest())
 
         self._conn.manager.request_blocking("eth_submitWork", [nonce_hex, self._mining_hash_hex, mix_digest_hex])
 
