@@ -28,6 +28,10 @@ class EthereumCpuMiner(object):
         self._nonce_bin = None
         self._mix_digest_bin = None
 
+        k = sha3.keccak_256()
+        k.update('ETC'.encode('utf-8'))
+        print('CONTROL HASH ETC: '+k.hexdigest())
+
     def get_work(self):
         self._mining_hash_hex, _, target_hex, block_number_hex = self._conn.eth.getWork()
         self._mining_hash_bin, self._target_bin, self._block_number_int = \
@@ -48,7 +52,7 @@ class EthereumCpuMiner(object):
             k.update(self._mining_hash_bin)
             k.update(bin_nonce)
             hash1 = int(k.hexdigest(), 16)
-            #o = hashimoto_light(self._block_number_int, cache, self._mining_hash_bin, bin_nonce)
+            # o = hashimoto_light(self._block_number_int, cache, self._mining_hash_bin, bin_nonce)
             if hash1 <= difficulty:
                 self._nonce_bin = bin_nonce
                 print('cnt',cnt)
@@ -65,6 +69,19 @@ class EthereumCpuMiner(object):
         nonce_hex, mix_digest_hex = bin_to_hex_b_final(self._nonce_bin), "0x"+"0"*64
         mix_digest_hex = self._mining_hash_hex
         print([nonce_hex, self._mining_hash_hex, mix_digest_hex])
+
+        nonce_hasher = sha3.keccak_256()
+        nonce_hasher.update(self._nonce_bin.encode('utf-8'))
+        print('NONCE HASH: ' + nonce_hasher.hexdigest())
+
+        mix_hasher = sha3.keccak_256()
+        mix_hasher.update(("0x"+"0"*64).encode('utf-8'))
+        print('MIX HASH: ' + mix_hasher.hexdigest())
+
+        work_hasher = sha3.keccak_256()
+        work_hasher.update([nonce_hex, self._mining_hash_hex, mix_digest_hex].encode('utf-8'))
+        print('WORK HASH: ' + work_hasher.hexdigest())
+
         self._conn.manager.request_blocking("eth_submitWork", [nonce_hex, self._mining_hash_hex, mix_digest_hex])
 
     def mine_n_blocks(self, n=1):
