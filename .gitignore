@@ -1,4 +1,6 @@
 *.idea
 *.pyc
 .env
-
+build/
+dist/
+__pycache__/
