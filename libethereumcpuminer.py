@@ -66,7 +66,7 @@ class EthereumCpuMiner(object):
             if hash1 <= difficulty:
                 end = time.time()
                 self._nonce_bin = bin_nonce
-                print('Mining Cycles: ',cnt)
+                print('Hashes Done: ',cnt)
                 # for x in self._mining_hash_bin:
                 #   print(x)
                 # for x in bin_nonce:
@@ -82,13 +82,14 @@ class EthereumCpuMiner(object):
         work_list = [nonce_hex, self._mining_hash_hex, mix_digest_hex]
 
         nonce_hasher = sha3.keccak_256()
-       	nonce_utf8 = str(self._nonce_bin)
-        nonce_hasher.update(nonce_utf8.encode('utf-8'))
+        nonce_hasher.update(nonce_hex.encode('utf-8'))
         # nonce_hasher.update(self._nonce_bin.encode('utf-8'))
-        print("    NONCE IS: ", self._nonce_bin)
+        print("    NONCE IS: ", self.nonce_hex)
 
         mix_hasher = sha3.keccak_256()
         mix_hasher.update((mix_digest_hex).encode('utf-8'))
+        print("    MIX IS: ", self.mix_digest_hex)
+
 
         mining_hash_hasher = sha3.keccak_256()
         mining_hash_hasher.update(self._mining_hash_hex.encode('utf-8'))
