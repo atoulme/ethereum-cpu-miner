@@ -2,6 +2,7 @@ import binascii
 from web3 import Web3, HTTPProvider
 from ethereum.pow.ethpow import get_cache, hashimoto_light, TT64M1
 from ethereum import utils
+from random import randint
 import sha3
 import time
 
@@ -76,7 +77,9 @@ class EthereumCpuMiner(object):
                 return
 
     def submit_work(self):
-        nonce_hex, mix_digest_hex = bin_to_hex_b_final(self._nonce_bin), "0x"+"1"*64
+        nonce_hex = bin_to_hex_b_final(self._nonce_bin), 
+        # choose a random 64 number string 
+        mix_digest_hex = "0x"+(str(randint(1000, 9999))*16)
         # mix_digest_hex = self._mining_hash_hex
 
         work_list = [nonce_hex, self._mining_hash_hex, mix_digest_hex]
@@ -84,16 +87,15 @@ class EthereumCpuMiner(object):
         nonce_hasher = sha3.keccak_256()
         nonce_hasher.update(nonce_hex.encode('utf-8'))
         # nonce_hasher.update(self._nonce_bin.encode('utf-8'))
-        print("    NONCE IS: ", self.nonce_hex)
-
-        mix_hasher = sha3.keccak_256()
-        mix_hasher.update((mix_digest_hex).encode('utf-8'))
-        print("    MIX IS: ", self.mix_digest_hex)
-
+        print("    NONCE IS: ",nonce_hex)
 
         mining_hash_hasher = sha3.keccak_256()
         mining_hash_hasher.update(self._mining_hash_hex.encode('utf-8'))
         print("    MINING HASH IS: ", self._mining_hash_hex)
+
+        mix_hasher = sha3.keccak_256()
+        mix_hasher.update((mix_digest_hex).encode('utf-8'))
+        print("    MIX IS: ", self.mix_digest_hex)
 
         work_hasher = sha3.keccak_256()
         work_concat = ''.join(work_list)
